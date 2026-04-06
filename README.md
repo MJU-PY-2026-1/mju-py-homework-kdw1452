@@ -54,7 +54,8 @@
     * **적용 내용:** 손님 아이디(user_id/str), 충전 금액(recharge_money/int), 추가된 시간(added_time/float), 손님 나이(age/int), 성인 판별여부(adult/bool) 등을 사용하면 변수 5개 이상, 자료형 4개를 사용하게 됩니다.
     
 ### **📁 증빙 자료:**
-  * [1차_AI협업캡처.pdf] lms에 업로드 했습니다.
+  * [1차 AI협업캡처.pdf](https://github.com/user-attachments/files/26503459/1.AI.pdf)
+
 
 <br>
 
