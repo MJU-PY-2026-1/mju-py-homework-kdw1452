@@ -180,19 +180,23 @@ for i in range(1000) :
             updated_time = current_time - use_time
             user_times[user_index] = updated_time
             
+            return_seat = int(input("반납하실 좌석 번호(1~10)을(를) 입력해주세요 : "))
+            return_index = return_seat - 1
+
+            if seats[return_index] == "사용중" :
+                seats[return_index] = "비어있음"
+                print(f"=> {return_seat}번 좌석이 정상적으로 반납되었습니다.")
+                print(f"=> {name}님, 남은 시간은 {updated_time}시간 입니다. 안녕히 가세요!")
+                continue
+
+            else :
+                print(f"=> {return_seat}번 좌석은 이미 비어있습니다.")
+
         else :
             print(f"=> 등록되지 않은 이름입니다. 이름을 확인해 주세요.")
 
-        if my_seat != -1 :
-            seats[my_seat] = "비어있음"
-            print(f"=> {my_seat + 1}번 좌석이 정상적으로 반납되었습니다.")
-            my_seat = -1
-
-        print(f"=> {name}님, 남은 시간은 {updated_time}시간 입니다. 안녕히 가세요!")
-        continue
-
-        
-
+       
+# 7. 관리자 메뉴
     elif num_choice == 7 :
         pw_input = str(input(f"관리자 비밀번호를 입력하세요."))
 
