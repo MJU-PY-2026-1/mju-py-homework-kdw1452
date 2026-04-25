@@ -146,7 +146,7 @@ for i in range(1000) :
         if time_check == "네" :
             age = int(input(f"나이 확인을 위해 자신의 나이를 숫자로 입력해주세요. : "))
 
-            if age < 19 :
+            if age <= 19 :
                 print(f"=> 경고 : 미성년자는 야간 출입이 불가합니다. 결제가 중지됩니다.")
 
                 total_payment = 0
