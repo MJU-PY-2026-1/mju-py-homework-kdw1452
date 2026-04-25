@@ -32,7 +32,7 @@ for i in range(1000) :
     # 1. PC시간 충전(1000원에 1시간)
     if num_choice == 1 :
         name = input("회원 이름을 입력하세요 : ")
-        money = int(input("충전할 금액을 입력하세요 (원) : "))
+        money = float(input("충전할 금액을 입력하세요 (원) : "))
         add_time = money / 1000
 
         if money >= 10000 :
@@ -65,7 +65,7 @@ for i in range(1000) :
         for i in range(6) :
             print(f"{i+1}번 : {food_menu[i]} ({food_price[i]}원)")
 
-        food_choice = int(input("주문할 음식의 번호를 선택해주세요. (취소는 0번)"))
+        food_choice = int(input("주문할 음식의 번호를 선택해주세요. (취소는 0번, 장바구니 제거는 7번)"))
 
         
             
@@ -83,6 +83,12 @@ for i in range(1000) :
             print("=> 주문을 취소합니다.")
             continue
 
+        elif food_choice == 7 :
+            remove_food = input("제거할 음식메뉴를 작성해 주세요 :")
+            cart.remove(remove_food)
+
+            print(f"=> {remove_food}가 장바구니에서 제거되었습니다.")
+            
         else :
             print("=> 잘못된 번호입니다.")
 
