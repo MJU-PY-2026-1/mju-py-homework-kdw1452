@@ -184,7 +184,7 @@ for i in range(1000) :
             print(f"=> 등록되지 않은 이름입니다. 이름을 확인해 주세요.")
 
         if my_seat != -1 :
-            seats[my_seat - 1] = "비어있음"
+            seats[my_seat] = "비어있음"
             print(f"=> {my_seat + 1}번 좌석이 정상적으로 반납되었습니다.")
             my_seat = -1
 
