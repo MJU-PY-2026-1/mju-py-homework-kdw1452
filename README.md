@@ -90,7 +90,7 @@
      
 ### **📁 증빙 자료:**
   * [AI 협업 증명2.pdf](https://github.com/user-attachments/files/27083686/AI.2.pdf)
-    [2차과제_실행결과.pdf](https://github.com/user-attachments/files/27083685/2._.pdf)
+  * [2차과제_실행결과.pdf](https://github.com/user-attachments/files/27083685/2._.pdf)
 
 <br>
 
