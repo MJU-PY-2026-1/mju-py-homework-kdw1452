@@ -13,7 +13,7 @@ today_revenue = 0
 admin_pw = "1234"
 user_names = []
 user_times = []
-
+users_info = []
 
 
 #def 함수 정의
@@ -33,7 +33,14 @@ def charge_time() :
     global total_payment
 
     name = input('회원 이름을 입력하세요 : ')
-    money = float(input('충전할 금액을 입력하세요 (원) : '))
+
+    while True : 
+        try :
+            money = float(input('충전할 금액을 입력하세요 (원) : '))
+            break
+        
+        except ValueError : 
+            print(f'=> 금액은 숫자로만 입력해주세요. 메인메뉴로 돌아갑니다.')
 
     charged_time = calculate_add_time(money)
 
@@ -112,7 +119,19 @@ def select_seat() :
     for i in range(10) : 
         print(f'{i+1}번 좌석 {seats[i]}')
 
-    seat_choice = int(input('원하시는 좌석의 번호를 입력하세요(1~10) : '))
+    name = input('좌석을 이용할 회원 이름을 입력해주세요 : ')
+
+    if name not in user_names : 
+        print(f'=> 등록되지 않은 회원입니다. 1번 메뉴에서 시간 충전을 먼저 해주세요.')
+        return
+    
+    while True : 
+        try:
+            seat_choice = int(input('원하시는 좌석의 번호를 입력하세요(1~10) : '))
+            break
+
+        except ValueError : 
+            print(f'좌석 번호는 숫자로만 입력해주세요. 다시 입력해주세요.')
 
     if 1 <= seat_choice <= 10 :
         seat_num = seat_choice - 1
@@ -120,6 +139,10 @@ def select_seat() :
         if seats[seat_num] == '비어있음' :
             seats[seat_num] = '사용중'
             my_seat = seat_num
+
+            user_idx = user_names.index(name)
+            users_info.append([name, user_times[user_idx], seat_choice, [] ])
+
             print(f'=> {seat_choice}번 좌석이 배정되었습니다!')
 
         else :
@@ -162,14 +185,35 @@ def check_my_info() :
 def checkout_and_pay() : 
     global total_payment, today_revenue, my_seat, cart
 
+
+    if total_payment == 0 :
+        print(f'=> 결제하실 금액이 없습니다.')
+        return
+
     print()
     print(f'결제 하실 금액은 총 {total_payment}원 입니다.')
 
-    time_check = input('현재 시간이 밤 10시 이후입니까? (네/아니요) : ')
+    name = input(f'결재하시는 회원 이름을 입력해주세요 : ')
+
+    print(f'주의 ! <야간에 미성년자가 출입을 시도하면 시스템 안전을 위해 기존 남은 시간까지 전량 몰수 및 회원 영구 제명 처리가 됩니다.>')
+    while True : 
+        time_check = input('현재 시간이 밤 10시 이후입니까? (네/아니요) : ')
+
+        if time_check == '네' or time_check == '아니요' : 
+            break
+
+        else : 
+            print(f'=> 정확히 "네" 또는 "아니요"만 입력해주세요.')
 
     if time_check == '네' : 
-        age = int(input(f'나이 확인을 위해 자신의 나이를 숫자로 입력해주세요 : ' ))
-        
+        while True : 
+            try : 
+                age = int(input(f'나이 확인을 위해 자신의 나이를 숫자로 입력해주세요 : ' ))
+                break
+
+            except ValueError : 
+                print(f'나이는 숫자로만 입력해야 합니다. 다시 입력해주세요.')
+
         if age <= 19 :
             print(f' => 경고! 미성년자는 야간 출입이 불가합니다. 결제가 중지됩니다.')
             total_payment = 0
@@ -177,12 +221,26 @@ def checkout_and_pay() :
 
             if my_seat != -1 :
                 seats[my_seat] = '비어있음'
+
+                for user in users_info : 
+                    if user[0] == name :
+                        users_info.remove(user)
+
                 my_seat = -1
+
+            if name in user_names : 
+                user_idx = user_names.index(name)
+                user_names.pop(user_idx)
+                user_times.pop(user_idx)
 
             return
         
         else : 
             print(f'=> 신분증 확인을 위해 입장하실 때, 카운터에 신분증을 제출해주세요.')
+
+    for user in users_info : 
+        if user[0] == name :
+            user[3].extend(cart)
 
     print(f'=> 결제가 완료되었습니다. 감사합니다')
     today_revenue += total_payment
@@ -198,37 +256,62 @@ def end_use() :
 
     name = input('종료하실 회원 이름을 입력해주세요 : ')
 
-    if name in user_names : 
+    target_user = []
+    for user in users_info : 
+        if user[0] == name :
+            target_user = user
+            break
+
+    if len(target_user) > 0 : 
         return_seat = int(input('반납하실 좌석 번호를 입력해주세요(1~10) : '))
 
-        if 1 <= return_seat <= 10 :
-            return_index = return_seat - 1
+        if target_user[2] == return_seat  :
+                use_time = float(input(f'오늘 사용하신 시간을 입력해주세요 : '))
 
-            if seats[return_index] == '사용중' : 
-                user_index = user_names.index(name)
-                
-                use_time = float(input('오늘 사용하신 시간을 입력해주세요 : '))
+                idx = user_names.index(name)
+                user_times[idx] -= use_time
 
-                current_time = user_times[user_index]
-                updated_time = current_time - use_time
-                user_times[user_index] = updated_time 
-
-                seats[return_index] = '비어있음'
+                seats[return_seat - 1] = '비어있음'
                 my_seat = -1
 
-                print(f'=> {return_seat}번 좌석이 정상적으로 반납되었습니다.')
-                print(f'=> {name}님, 남은 시간은 {updated_time}시간 입니다. 안녕히 가세요!')
+                users_info.remove(target_user)
 
-            else : 
-                print(f'=> {return_seat}번 좌석은 현재 비어있습니다. 본인의 좌석번호를 확인해주세요')
 
-        else :
-            print(f'=> 잘못된 좌석 번호입니다. 1~10 사이의 숫자를 입력해주세요.')
+                print(f'=> {return_seat}번 좌석이 정상적으로 반납되었습니다. 안녕히 가세요!')
 
-    else :
-        print(f'=> 등록되지 않은 이름입니다. 이름을 확인해주세요.')
+        else : 
+                print(f'=> 좌석 번호가 일치하지 않습니다.')
+    
+    else : 
+        print(f'=> 현재 좌석을 이용 중인 회원이 아니거나 이름을 잘못 입력하셨습니다.')
 
-# 7. 관리자 메뉴 함수
+#7. 현재 이용자 정보 출력
+def show_users_info() : 
+    print()
+    print(f'[현재 PC반 이용자 현황]')
+
+    if len(users_info) == 0 :
+        print(f'=> 현재 사용중인 회원이 없습니다.')
+    
+    else : 
+        print(f'현재 사용중인 회원의 정보를 출력합니다. (회원이름, 남은 시간, 좌석번호, 주문한 음식)')
+        print(f'-' * 30)
+
+        for user in users_info :
+            print(f'{user[0]}님의 남은 시간은 {user[1]}시간, 선택한 좌석은 {user[2]}번 입니다.', end = '')
+
+            if len(user[3]) == 0 :
+                print(f'주문한 음식 없음')
+
+            else :
+                for food in user[3] :
+                    print(f'주문한 음식은 [{food}] 입니다.', end = '')
+
+                print()
+
+
+
+# 8. 관리자 메뉴 함수
 def admin_menu() :
     pw_input = input('관리자 비밀번호를 입력하세요 : ')
 
@@ -241,8 +324,26 @@ def admin_menu() :
     else :
         print('=> 비밀번호가 틀렸습니다')
             
-    
+#9. 텍스트 파일로 저장
+def save_data() : 
+        with open('users_info_backup.txt', 'w', encoding = 'utf-8') as file : 
+            file.write(f'[현재 이용자 백업]')
 
+            for user in users_info : 
+                print(f'{user[0]} - {user[1]}시간, {user[2]}번 좌석, ' , end = '')
+
+                if len(user[3]) == 0 :
+                    print(f'주문한 음식 없음')
+
+                else :
+                    for food in user[3] : 
+                        print(f'[{food}]' , end = '')
+
+                    print()
+        print(f'=> 현재 이용자 데이터의 백업이 텍스트 파일에 저장되었습니다.')                
+
+
+#메인 프로그램 실행
 
 print(f"PC방에 방문해주셔서 감사합니다. PC방 무인 키오스크 시스템을 시작합니다.")
 
@@ -255,11 +356,21 @@ while True :
     print('4. 내 정보 확인 및 장바구니 확인')
     print('5. 연령 확인 및 최종 결제')
     print('6. 사용 종료 및 좌석 반납')
-    print('7. [관리자 메뉴]')
-    print('8. 프로그램 종료')
+    print('7. 현재 이용자 현황 조회')
+    print('8. [관리자 메뉴]')
+    print('9. 데이터 파일 저장')
+    print('10. 프로그램 종료')
     print('-' * 30)
 
-    num_choice = int(input('원하시는 메인 메뉴 번호를 입력하세요. : '))
+
+
+    try : 
+        num_choice = int(input('원하시는 메인 메뉴 번호를 입력하세요. : '))
+
+    except ValueError : 
+        print(f'=> 잘못된 입력입니다. 숫자만 입력해주세요.')
+        continue
+
 
     if num_choice == 1 :
         charge_time()
@@ -280,11 +391,18 @@ while True :
         end_use()
 
     elif num_choice == 7 :
-        admin_menu()
+        show_users_info()
 
     elif num_choice == 8 :
+        admin_menu()
+
+    elif num_choice == 9 :
+        save_data()
+
+    elif num_choice == 10 :
         print('=> PC반 키오스크 시스템을 안전하게 종료합니다.')
+        save_data()
         break
 
     else :
-        print('=> 잘못된 번호 입력입니다. 1~8번 까지 올바른 번호를 입력해주세요')
+        print('=> 잘못된 번호 입력입니다. 1~10번 까지 올바른 번호를 입력해주세요')
