@@ -40,7 +40,7 @@ def charge_time() :
             break
         
         except ValueError : 
-            print(f'=> 금액은 숫자로만 입력해주세요. 메인메뉴로 돌아갑니다.')
+            print(f'=> 금액은 숫자로만 입력해주세요.')
 
     charged_time = calculate_add_time(money)
 
